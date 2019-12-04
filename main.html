@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Componente Polymer</title>
+  <base href="https://cdn.rawgit.com/download/polymer-cdn/2.6.0/lib/">
+  <script src="webcomponentsjs/webcomponents-loader.js"></script>
+  <link rel="import" href="iron-ajax/iron-ajax.html">
+  <link rel="import" href="polymer/polymer-element.html">
+</head>
+
+<body>
+  <!--Componente padre-->
+  <polymer-element></polymer-element>
+  <dom-module id="polymer-element">
+    <template>
+      <style>
+        :host {
+          margin: 8px;
+          padding: 16px;
+          display: block;
+          background-color: whitesmoke;
+        }
+
+        :host>div {
+          background-color: orange;
+          margin: 8px;
+          padding: 10px;
+          display: block;
+        }
+      </style>
+      <div>Mes: [[month]] Estacion:[[season]]</div>
+      <polymer-hijo1 padre-months={{months}} padre-mes={{month}} padre-estacion={{season}}></polymer-hijo1>
+      <polymer-hijo2 padre-months={{months}}></polymer-hijo2>
+    </template>
+    <script>
+      class PolymerElement extends Polymer.Element {
+        static get is() {
+          return "polymer-element";
+        }
+        static get properties() {
+          return {
+            month: {
+              type: String,
+            },
+            season: {
+              type: String
+            },
+            months: {
+              type: Array,
+              value: [{
+                  name: 'Enero',
+                  season: 'Winter'
+                },
+                {
+                  name: 'Febrero',
+                  season: 'Winter'
+                },
+                
+              ]
+            }
+
+          }
+        }
+      }
+      customElements.define(PolymerElement.is, PolymerElement);
+    </script>
+  </dom-module>
+
+  <!--Componente hijo 1-->
+  <dom-module id="polymer-hijo1">
+    <template>
+      <style>
+        :host {
+          margin: 8px;
+          padding: 16px;
+          display: block;
+          background-color: forestgreen;
+        }
+      </style>
+      <template is="dom-repeat" items="{{padreMonths}}">
+        <button on-click="cambiarMes">{{item.name}} <button on-click="removeMes">X</button></button>
+      </template>
+
+    </template>
+    <script>
+      class PolymerHijo1 extends Polymer.Element {
+        static get is() {
+          return "polymer-hijo1";
+        }
+        static get properties() {
+          return {
+            padreMes: {
+              type: String,
+              notify: true
+            },
+            padreEstacion: {
+              type: String,
+              notify: true
+            },
+            padreMonths: {
+              type: Array
+            }
+          }
+        }
+        cambiarMes(event) {
+          console.log(event.model.item)
+          const item = event.model.item
+          this.padreMes = item.name
+          this.padreEstacion = item.season
+
+        }
+        removeMes(event) {
+          console.log(event)
+          this.splice('months', event.model.index ,1);
+        }
+      }
+      customElements.define(PolymerHijo1.is, PolymerHijo1);
+    </script>
+  </dom-module>
+
+
+  <!--Componente hijo 2-->
+  <dom-module id="polymer-hijo2">
+    <template>
+      <style>
+        :host {
+          margin: 8px;
+          padding: 16px;
+          display: block;
+          background-color: deepskyblue;
+        }
+      </style>
+
+      name: <input type="text" value="{{nombre::input}}">Season: <input type="text" value="{{mes::input}}"><button
+        on-click="agregarMes">Add</button>
+
+    </template>
+    <script>
+      class PolymerHijo2 extends Polymer.Element {
+        static get is() {
+          return "polymer-hijo2";
+        }
+        static get properties() {
+          return {
+            nombre: {
+              type: String
+            },
+            mes: {
+              type: String
+            },
+            padreMonths: {
+              type: Array
+            }
+          }
+        }
+        agregarMes() {
+          console.log('Agrega')
+          this.push('padreMonths', {
+            name: this.nombre,
+            season: this.mes
+          })
+        }
+      }
+      customElements.define(PolymerHijo2.is, PolymerHijo2);
+    </script>
+  </dom-module>
+</body>
+
+</html>
