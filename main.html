@@ -19,19 +19,14 @@
           margin: 8px;
           padding: 16px;
           display: block;
-          background-color: whitesmoke;
-        }
-
-        :host>div {
-          background-color: orange;
-          margin: 8px;
-          padding: 10px;
-          display: block;
+          background-color: rosybrown;
         }
       </style>
-      <div>Mes: [[month]] Estacion:[[season]]</div>
-      <polymer-hijo1 padre-months={{months}} padre-mes={{month}} padre-estacion={{season}}></polymer-hijo1>
-      <polymer-hijo2 padre-months={{months}}></polymer-hijo2>
+      <h1>Nested components</h1>
+      <div>[[title]]</div>
+      <polymer-hijo2 padre-data={{dataPeliculas}}></polymer-hijo2>
+      <polymer-hijo3 padre-data={{dataPeliculas}}></polymer-hijo3>
+      <polymer-hijo1 padre-data={{dataPeliculas}} id-p={{id}} title-p={{title}}></polymer-hijo1>
     </template>
     <script>
       class PolymerElement extends Polymer.Element {
@@ -40,29 +35,23 @@
         }
         static get properties() {
           return {
-            month: {
+            id: {
               type: String,
+              value:'hola'
             },
-            season: {
+            title: {
               type: String
             },
-            months: {
-              type: Array,
-              value: [{
-                  name: 'Enero',
-                  season: 'Winter'
-                },
-                {
-                  name: 'Febrero',
-                  season: 'Winter'
-                },
-                
+            dataPeliculas:{
+              type:Array,
+              value:[
+                {id:'01',title:'text 01'},
+                {id:'02',title:'text 02'}
               ]
+            }            
             }
-
           }
         }
-      }
       customElements.define(PolymerElement.is, PolymerElement);
     </script>
   </dom-module>
@@ -78,8 +67,8 @@
           background-color: forestgreen;
         }
       </style>
-      <template is="dom-repeat" items="{{padreMonths}}">
-        <button on-click="cambiarMes">{{item.name}} <button on-click="removeMes">X</button></button>
+      <template is="dom-repeat" items="{{padreData}}">
+        <button on-click="cambiarTitle">{{item.title}}</button><button on-click="removeTitle">X</button>
       </template>
 
     </template>
@@ -90,29 +79,27 @@
         }
         static get properties() {
           return {
-            padreMes: {
+            idP: {
               type: String,
               notify: true
             },
-            padreEstacion: {
+            titleP: {
               type: String,
               notify: true
             },
-            padreMonths: {
+            padreData: {
               type: Array
             }
           }
         }
-        cambiarMes(event) {
+        cambiarTitle(event) {
           console.log(event.model.item)
           const item = event.model.item
-          this.padreMes = item.name
-          this.padreEstacion = item.season
-
+          this.titleP = item.title
         }
-        removeMes(event) {
-          console.log(event)
-          this.splice('months', event.model.index ,1);
+        removeTitle(event){
+           console.log(event);
+           this.splice("padreData",event.model.index,1);
         }
       }
       customElements.define(PolymerHijo1.is, PolymerHijo1);
@@ -132,7 +119,7 @@
         }
       </style>
 
-      name: <input type="text" value="{{nombre::input}}">Season: <input type="text" value="{{mes::input}}"><button
+      <input type="text" value="{{title::input}}"><button
         on-click="agregarMes">Add</button>
 
     </template>
@@ -143,26 +130,57 @@
         }
         static get properties() {
           return {
-            nombre: {
+            id: {
               type: String
             },
-            mes: {
+            title: {
               type: String
             },
-            padreMonths: {
+            padreData: {
               type: Array
             }
           }
         }
         agregarMes() {
           console.log('Agrega')
-          this.push('padreMonths', {
-            name: this.nombre,
-            season: this.mes
+          this.push('padreData', {
+            id: this.id,
+            title: this.title
           })
         }
       }
       customElements.define(PolymerHijo2.is, PolymerHijo2);
+    </script>
+  </dom-module>
+
+  <!--Componente hijo 3-->
+  <dom-module id="polymer-hijo3">
+    <template>
+      <style>
+        :host {
+          margin: 8px;
+          padding: 16px;
+          display: block;
+          background-color: gray;
+        }
+      </style>
+     
+        <input type="text" value={{dataPeliculas::title}} >
+    
+    </template>
+    <script>
+      class PolymerHijo3 extends Polymer.Element {
+        static get is() {
+          return "polymer-hijo3";
+        }
+        static get properties() {
+          return {
+            
+          }
+        }
+      }
+      
+      customElements.define(PolymerHijo3.is, PolymerHijo3);
     </script>
   </dom-module>
 </body>
